@@ -1,0 +1,100 @@
+---
+title: "Hackathon - Sprint 1"
+output: html_notebook
+---
+
+# Library
+```{r}
+library(tidyverse) # for everything :)
+library(readxl) # for reading in xls docs
+library(VIM) # for aggr
+library(ggplot2) # for vis
+library(cluster)
+library(fpc)
+```
+
+# Hypothesis
+
+NULL: Generations do not take different amounts of time off from work. There is no identifiable clusters of absences that can be attributed to age.
+
+# Import your data
+Watch out for the file extension here...
+```{r}
+df <- read_xls("downloads/Absenteeism_at_work.xls")
+```
+
+# Transform & Explore
+
+Take a look at your data using `head`
+```{r}
+head(df)
+```
+
+Trying running some `summary` stats
+```{r}
+summary(df)
+```
+
+Check for missing values. You might need the `VIM` package for this.
+```{r}
+aggr(df)
+```
+
+Create a view of the individual rather than a view of the absenses.
+```{r}
+df <- aggregate(df, by=list(df$ID), FUN=mean)
+```
+
+Take another look at head
+```{r}
+head(df)
+```
+
+Normalise the dataset
+```{r}
+## TBD
+```
+
+
+Run clustering using K-means
+```{r}
+# Kmeans cluster analysis
+cluster <- kmeans(df, centers=6)
+# Plot cluster to see whether k-means has rationally clustered
+plotcluster(df, cluster$cluster)
+```
+
+Check-out the head to see any identifiable patterns. 
+```{r}
+head(cluster)
+```
+
+Create an elbow graph to 
+```{r}
+k.max <- 15
+data <- df
+wss <- sapply(1:k.max, 
+              function(k){kmeans(data, k, nstart=50,iter.max = 15 )$tot.withinss})
+wss
+plot(1:k.max, wss,
+     type="b", pch = 19, frame = FALSE, 
+     xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+```
+
+Create a new dataframe with the same info as `df` and add in the results of the k-means clustering
+```{r}
+kmeansResult<-factor(cluster$cluster)
+df2 <- df
+df2$cluster <- kmeansResult
+```
+
+Check out the new dataframe with clustered classes
+```{r}
+df2
+```
+
+```{r}
+
+```
+
